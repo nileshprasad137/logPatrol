@@ -8,9 +8,10 @@ from pathlib import Path
 async def time(websocket, path):
     two_up = Path(__file__).resolve().parents[2]
     f = open(os.path.join(two_up,"logfile.txt"), "r")
-    contents = f.read()
+    f.seek(0, os.SEEK_END)
+    # contents = f.read()
     last_pos = f.tell()
-    await websocket.send(contents)
+    # await websocket.send(contents)
     while True:
         f = open(os.path.join(two_up,"logfile.txt"), "r")
         f.seek(last_pos)
