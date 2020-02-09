@@ -20,7 +20,7 @@ async def time(websocket, path):
             #   something new
             await websocket.send(newText)
             last_pos = f.tell()
-        await asyncio.sleep(random.random() * 3)
+        # await asyncio.sleep(random.random() * 3)
 
 start_server = websockets.serve(time, "127.0.0.1", 5678)
 
