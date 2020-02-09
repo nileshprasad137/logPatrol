@@ -5,7 +5,7 @@ import random
 import websockets
 from pathlib import Path
 
-async def time(websocket, path):
+async def talk(websocket, path):
     two_up = Path(__file__).resolve().parents[2]
     f = open(os.path.join(two_up,"logfile.txt"), "rb")
     tail_contents = tail(f,5)
@@ -20,7 +20,7 @@ async def time(websocket, path):
         f = open(os.path.join(two_up,"logfile.txt"), "r")
         f.seek(last_pos)
         newText = f.readline()
-        if newText!='':
+        if newText:
             #   something new
             await websocket.send(newText)
             last_pos = f.tell()
@@ -59,7 +59,7 @@ def tail(f, window=20):
 
     return ''.join(data).splitlines()[-window:]
 
-start_server = websockets.serve(time, "127.0.0.1", 5678)
+start_server = websockets.serve(talk, "127.0.0.1", 5678)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
