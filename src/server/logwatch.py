@@ -24,22 +24,19 @@ async def talk(websocket, path):
         while True:
             f = open(os.path.join(two_up,"logfile.txt"), "r")
             f.seek(last_pos)
-            newText = f.readline()
-            if newText:
+            new_text = f.readline()
+            if new_text:
                 #   something new
                 last_heartbeat = time.time()
-                await websocket.send(newText)
+                await websocket.send(new_text)
                 last_pos = f.tell()
             await asyncio.sleep(random.random() * 3)
 
-            # wait for certain time and then send
+            # wait for certain time and then ping
             if time.time() - last_heartbeat > HEARTBEAT_INTERVAL:
                 try:
                     await websocket.send('ping')
-                    # pong = await websocket.recv()
-                    # print(pong)
                     pong = await asyncio.wait_for(websocket.recv(), 5)
-                    print(pong)
                     if pong != 'pong':
                         raise Exception()
                 except Exception:
@@ -87,7 +84,10 @@ def tail(f, window=20):
 
     return ''.join(data).splitlines()[-window:]
 
-start_server = websockets.serve(talk, "127.0.0.1", 5678)
+def main():
+    start_server = websockets.serve(talk, "127.0.0.1", 5678)
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+if __name__ == '__main__':
+    main()
