@@ -3,7 +3,10 @@ import os
 import asyncio
 import random
 import websockets
+import time
 from pathlib import Path
+
+HEARTBEAT_INTERVAL = 15 # seconds
 
 async def talk(websocket, path):
     two_up = Path(__file__).resolve().parents[2]
@@ -15,16 +18,41 @@ async def talk(websocket, path):
 
     f.seek(0, os.SEEK_END)
     last_pos = f.tell()
+    last_heartbeat = time.time()
 
-    while True:
-        f = open(os.path.join(two_up,"logfile.txt"), "r")
-        f.seek(last_pos)
-        newText = f.readline()
-        if newText:
-            #   something new
-            await websocket.send(newText)
-            last_pos = f.tell()
-        await asyncio.sleep(random.random() * 3)
+    try:
+        while True:
+            f = open(os.path.join(two_up,"logfile.txt"), "r")
+            f.seek(last_pos)
+            newText = f.readline()
+            if newText:
+                #   something new
+                last_heartbeat = time.time()
+                await websocket.send(newText)
+                last_pos = f.tell()
+            await asyncio.sleep(random.random() * 3)
+
+            # wait for certain time and then send
+            if time.time() - last_heartbeat > HEARTBEAT_INTERVAL:
+                try:
+                    await websocket.send('ping')
+                    # pong = await websocket.recv()
+                    # print(pong)
+                    pong = await asyncio.wait_for(websocket.recv(), 5)
+                    print(pong)
+                    if pong != 'pong':
+                        raise Exception()
+                except Exception:
+                    raise Exception('Ping error')
+                else:
+                    last_heartbeat = time.time()
+
+    except Exception as e:
+        print("Closed connection with the browser. Message{}".format(e))
+        await websocket.close()
+        import sys
+        sys.exit(1)
+
 
 def tail(f, window=20):
     """Returns the last `window` lines of file `f` as a list.
