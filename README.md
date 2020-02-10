@@ -1,6 +1,6 @@
  # LogPatrol
 
-Monitor logs from file to browser in realTime. Tail -f implementation in Python. (Without SubProcess)
+Monitor logs from file to browser in realTime. Tail -f implementation in Python. (Without SubProcess). Solution is optimized for large files. In order to perform `tail -xf` operation on large files, I read the file in chunks of 1KB from bottom, until i find x lines.  
 
 #### Requirements
 Python 3.7+ 
