@@ -8,3 +8,5 @@ Python 3.7+
 #### Instructions to run:
 Run `logwatch.py`  and open  `websocket_client.html` in browser. Add logs in `logfile.txt` and see the changes in browser.
 
+#### LICENSE ##
+MIT
