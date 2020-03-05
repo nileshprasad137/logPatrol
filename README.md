@@ -9,4 +9,4 @@ Python 3.7+
 Run `logwatch.py`  and open  `websocket_client.html` in browser. Add logs in `logfile.txt` and see the changes in browser.
 
 #### LICENSE ##
-MIT
+[MIT](LICENSE)
